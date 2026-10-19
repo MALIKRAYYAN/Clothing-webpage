@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBE CRAFT - Fashion Store & Admin COD Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        neonPink: '#FF2E93',
+                        electricPurple: '#7928CA',
+                        brightCyan: '#00DFD8',
+                        vividGold: '#FFD000',
+                        darkBg: '#0B0914',
+                        cardDark: '#151226',
+                        cardDarkBorder: '#272242'
+                    },
+                    boxShadow: {
+                        'glow-pink': '0 0 25px rgba(255, 46, 147, 0.4)',
+                        'glow-cyan': '0 0 25px rgba(0, 223, 216, 0.4)',
+                        'glow-purple': '0 0 25px rgba(121, 40, 202, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0914;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #FF2E93, #7928CA);
+            border-radius: 4px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #FF2E93, #7928CA, #00DFD8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Printable Parcel Shipping Slip Styling */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-parcel-slip, #printable-parcel-slip * {
+                visibility: visible;
+            }
+            #printable-parcel-slip {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                color: #000;
+                background: #fff;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-white font-sans antialiased selection:bg-neonPink selection:text-white min-h-screen flex flex-col justify-between">
+
+    <!-- Global Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-darkBg/90 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" onclick="switchView('client')" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonPink to-brightCyan flex items-center justify-center text-black font-black text-xl transform group-hover:rotate-12 transition-transform shadow-glow-pink">
+                    V
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-wider gradient-text uppercase">VIBE CRAFT</span>
+                </div>
+            </a>
+
+            <!-- Mode Controls & Shopping Cart -->
+            <div class="flex items-center gap-3">
+                <!-- Shopping Cart Icon -->
+                <button id="cart-toggle-btn" onclick="toggleCartDrawer()" class="relative p-2.5 rounded-xl bg-cardDark border border-white/10 text-white hover:border-neonPink transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-lg text-brightCyan"></i>
+                    <span class="hidden sm:inline text-xs font-bold uppercase tracking-wider">Cart</span>
+                    <span id="cart-count" class="bg-neonPink text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow-lg">0</span>
+                </button>
+
+                <!-- Admin View Exit Switcher -->
+                <button id="exit-admin-btn" onclick="switchView('client')" class="hidden px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-brightCyan font-bold text-xs uppercase transition-all flex items-center gap-1.5 border border-brightCyan/30">
+                    <i class="fa-solid fa-store"></i> Exit Admin
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CLIENT VIEW -->
+    <main id="client-view" class="flex-grow">
+        <!-- Hero Announcement Section -->
+        <section class="relative overflow-hidden py-12 border-b border-white/5 bg-gradient-to-b from-darkBg to-cardDark/50">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-neonPink/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-1/2 right-0 w-96 h-96 bg-brightCyan/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-electricPurple/20 border border-electricPurple/50 text-brightCyan font-bold text-xs uppercase tracking-widest mb-4">
+                    <i class="fa-solid fa-truck-fast text-vividGold"></i> Cash on Delivery Available Nationwide
+                </span>
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+                    EXPLORE OUR <span class="gradient-text">LATEST DROPS</span>
+                </h1>
+                <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto mt-3">
+                    Select your fit, add to cart, and pay cash right when your parcel arrives at your doorstep!
+                </p>
+
+                <!-- Search & Filter Controls -->
+                <div class="mt-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+                    <!-- Search Input (Triggers secret admin if 'Admin009' is typed) -->
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="client-search" onkeydown="checkAdminSecretKey(event)" oninput="renderClientCatalog()" placeholder="Search items by name..." 
+                            class="w-full pl-11 pr-4 py-3 rounded-xl bg-cardDark border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-neonPink transition-all">
+                    </div>
+                    <!-- Category Select Filter -->
+                    <select id="client-category-filter" onchange="renderClientCatalog()" 
+                        class="px-4 py-3 rounded-xl bg-cardDark border border-white/10 text-white text-sm focus:outline-none focus:border-brightCyan transition-all">
+                        <option value="all">All Categories</option>
+                        <option value="Hoodies">Hoodies</option>
+                        <option value="T-Shirts">T-Shirts</option>
+                        <option value="Jackets">Jackets</option>
+                        <option value="Ethnic">Ethnic & Festive</option>
+                        <option value="Streetwear">Streetwear</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Product Catalog Grid -->
+        <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="client-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Product items injected dynamically via JS -->
+            </div>
+
+            <!-- Empty Catalog State Message -->
+            <div id="catalog-empty-state" class="hidden text-center py-20 px-4">
+                <div class="w-20 h-20 rounded-3xl bg-cardDark border border-white/10 flex items-center justify-center mx-auto mb-4 text-3xl text-gray-500">
+                    <i class="fa-solid fa-shirt"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white">No Products Found</h3>
+                <p class="text-gray-400 text-sm max-w-md mx-auto mt-2">
+                    Try modifying your search or filter options!
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ADMIN DASHBOARD VIEW -->
+    <main id="admin-view" class="hidden flex-grow py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <!-- Admin Header Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+            <div>
+                <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-vividGold"></i> Store Management Portal
+                </h2>
+                <p class="text-gray-400 text-xs mt-1">Manage catalog inventory, process COD customer parcels, and adjust store settings.</p>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="flex flex-wrap items-center gap-2 bg-cardDark p-1.5 rounded-xl border border-white/10">
+                <button onclick="switchAdminTab('products')" id="tab-btn-products" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-brightCyan text-black">
+                    <i class="fa-solid fa-boxes-stacked mr-1"></i> Products
+                </button>
+                <button onclick="switchAdminTab('orders')" id="tab-btn-orders" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white relative">
+                    <i class="fa-solid fa-truck-ramp-box mr-1"></i> COD Orders
+                    <span id="admin-pending-badge" class="ml-1 px-1.5 py-0.5 rounded-full bg-neonPink text-white text-[10px] hidden">0</span>
+                </button>
+                <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-gear mr-1"></i> Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: PRODUCT MANAGEMENT -->
+        <div id="admin-tab-products" class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+            <!-- Left Side: Add / Edit Product Form -->
+            <div class="lg:col-span-5">
+                <div class="bg-cardDark border border-cardDarkBorder rounded-2xl p-6 sticky top-28 shadow-xl">
+                    <h3 id="form-title" class="text-lg font-bold text-white flex items-center gap-2 mb-4 pb-3 border-b border-white/10">
+                        <i class="fa-solid fa-plus text-neonPink"></i> Add New Product
+                    </h3>
+
+                    <form id="product-form" onsubmit="handleProductSubmit(event)" class="space-y-4">
+                        <input type="hidden" id="edit-product-id" value="">
+
+                        <!-- Title -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Product Title *</label>
+                            <input type="text" id="prod-title" required placeholder="e.g. Cyberpunk Neon Oversized Hoodie"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-neonPink transition-all">
+                        </div>
+
+                        <!-- Category & Price -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Category *</label>
+                                <select id="prod-category" required class="w-full px-3 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-brightCyan">
+                                    <option value="Hoodies">Hoodies</option>
+                                    <option value="T-Shirts">T-Shirts</option>
+                                    <option value="Jackets">Jackets</option>
+                                    <option value="Ethnic">Ethnic & Festive</option>
+                                    <option value="Streetwear">Streetwear</option>
+                                    <option value="Accessories">Accessories</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Price *</label>
+                                <div class="relative">
+                                    <span class="currency-label-span absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">PKR</span>
+                                    <input type="number" step="0.01" id="prod-price" required placeholder="2999"
+                                        class="w-full pl-12 pr-3 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-neonPink">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Image Source (URL or Local Upload) -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Product Image *</label>
+                            <div class="space-y-2">
+                                <input type="url" id="prod-image-url" placeholder="Paste Web Image URL..." oninput="handleImageUrlInput()"
+                                    class="w-full px-3.5 py-2 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-brightCyan">
+                                
+                                <div class="text-center text-[10px] text-gray-500 font-bold uppercase">- OR UPLOAD FILE -</div>
+                                
+                                <input type="file" id="prod-image-file" accept="image/*" onchange="handleFileUpload(event)" 
+                                    class="w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white/10 file:text-brightCyan hover:file:bg-white/20 cursor-pointer">
+                            </div>
+                            <div id="image-preview-container" class="mt-2 hidden">
+                                <img id="image-preview" class="h-24 w-full object-cover rounded-xl border border-white/10" src="" alt="Preview">
+                            </div>
+                        </div>
+
+                        <!-- Sizes Checkboxes -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">Available Sizes *</label>
+                            <div class="flex flex-wrap gap-2" id="sizes-checkbox-group">
+                                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-darkBg border border-white/10 text-xs font-bold cursor-pointer hover:border-brightCyan">
+                                    <input type="checkbox" value="S" checked class="accent-neonPink"> S
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-darkBg border border-white/10 text-xs font-bold cursor-pointer hover:border-brightCyan">
+                                    <input type="checkbox" value="M" checked class="accent-neonPink"> M
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-darkBg border border-white/10 text-xs font-bold cursor-pointer hover:border-brightCyan">
+                                    <input type="checkbox" value="L" checked class="accent-neonPink"> L
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-darkBg border border-white/10 text-xs font-bold cursor-pointer hover:border-brightCyan">
+                                    <input type="checkbox" value="XL" checked class="accent-neonPink"> XL
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-darkBg border border-white/10 text-xs font-bold cursor-pointer hover:border-brightCyan">
+                                    <input type="checkbox" value="XXL" class="accent-neonPink"> XXL
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Badge Tag & Stock Status -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Badge Tag</label>
+                                <select id="prod-badge" class="w-full px-3 py-2 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-neonPink">
+                                    <option value="New Drop">New Drop</option>
+                                    <option value="Trending">Trending</option>
+                                    <option value="Bestseller">Bestseller</option>
+                                    <option value="Limited">Limited Edition</option>
+                                    <option value="">No Badge</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Stock Status</label>
+                                <select id="prod-in-stock" class="w-full px-3 py-2 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-neonPink">
+                                    <option value="true">In Stock</option>
+                                    <option value="false">Out of Stock</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-2 flex gap-2">
+                            <button type="submit" id="submit-btn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-neonPink via-electricPurple to-brightCyan text-white font-extrabold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-glow-pink">
+                                Save Product
+                            </button>
+                            <button type="button" onclick="resetForm()" class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 font-bold text-xs uppercase">
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Side: Active Inventory Product Table -->
+            <div class="lg:col-span-7">
+                <div class="bg-cardDark border border-cardDarkBorder rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-boxes-stacked text-brightCyan"></i> Active Catalog
+                            <span id="admin-item-count" class="text-xs px-2 py-0.5 rounded-full bg-brightCyan/20 text-brightCyan font-bold">0 Items</span>
+                        </h3>
+                        <button onclick="clearAllProducts()" class="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500 hover:text-white text-xs font-bold transition-all">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Clear All
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider border-b border-white/10">
+                                    <th class="py-3 px-2">Item</th>
+                                    <th class="py-3 px-2">Category</th>
+                                    <th class="py-3 px-2">Price</th>
+                                    <th class="py-3 px-2">Stock</th>
+                                    <th class="py-3 px-2 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-inventory-table" class="divide-y divide-white/5 text-sm">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: COD ORDERS MANAGEMENT -->
+        <div id="admin-tab-orders" class="mt-8 hidden">
+            <div class="bg-cardDark border border-cardDarkBorder rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-truck-ramp-box text-neonPink"></i> Cash on Delivery (COD) Parcels
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Manage incoming COD orders, dispatch parcels, and print delivery slips.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="renderAdminOrders()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Refresh Orders
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Orders List / Cards Grid -->
+                <div id="admin-orders-list" class="space-y-4">
+                    <!-- Dynamic Orders Cards injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: STORE SETTINGS -->
+        <div id="admin-tab-settings" class="mt-8 hidden max-w-2xl mx-auto">
+            <div class="bg-cardDark border border-cardDarkBorder rounded-2xl p-6 shadow-xl space-y-6">
+                <h3 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+                    <i class="fa-solid fa-sliders text-vividGold"></i> Global Store Settings
+                </h3>
+
+                <form onsubmit="saveStoreSettings(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Store Name</label>
+                        <input type="text" id="setting-store-name" required
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-brightCyan">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Currency Symbol</label>
+                            <input type="text" id="setting-currency" required placeholder="PKR"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-brightCyan">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Delivery Fee</label>
+                            <input type="number" id="setting-delivery-fee" required step="1"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-brightCyan">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Admin Security PIN</label>
+                        <input type="text" id="setting-admin-pin" required maxlength="10"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-sm focus:outline-none focus:border-vividGold">
+                        <span class="text-[11px] text-gray-500 mt-1 block">PIN required to unlock admin panel. Default is '1234'.</span>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-neonPink via-electricPurple to-brightCyan text-white font-extrabold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-glow-pink mt-4">
+                        Save Global Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- ADMIN PIN LOGIN MODAL -->
+    <div id="admin-pin-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="bg-cardDark border border-cardDarkBorder w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center relative">
+            <button onclick="closePinModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="w-14 h-14 rounded-2xl bg-vividGold/20 text-vividGold flex items-center justify-center text-2xl mx-auto mb-3">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-white">Store Admin Security</h3>
+            <p class="text-gray-400 text-xs mt-1">Enter Admin PIN to access dashboard.</p>
+
+            <form onsubmit="verifyAdminPin(event)" class="mt-5 space-y-4">
+                <input type="password" id="admin-pin-input" maxlength="10" placeholder="Enter PIN" required
+                    class="w-full text-center text-2xl tracking-widest py-3 rounded-xl bg-darkBg border border-white/20 text-white focus:outline-none focus:border-neonPink">
+                
+                <div id="pin-error-msg" class="text-xs text-red-400 font-bold hidden">Invalid PIN! Try default '1234'.</div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-neonPink to-electricPurple text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 shadow-glow-pink">
+                    Unlock Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CLIENT SHOPPING CART SLIDE-OVER DRAWER -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
+        <div id="cart-backdrop" onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div id="cart-panel" class="w-screen max-w-md bg-cardDark border-l border-white/10 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out pointer-events-auto">
+                <div>
+                    <!-- Drawer Header -->
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bag-shopping text-neonPink"></i> Your Shopping Bag
+                        </h3>
+                        <button onclick="toggleCartDrawer(false)" class="text-gray-400 hover:text-white text-xl">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Cart Items List -->
+                    <div id="cart-items" class="mt-6 space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Drawer Footer & Order Trigger -->
+                <div class="border-t border-white/10 pt-4 space-y-3">
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between text-gray-400">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal" class="font-bold text-white">PKR 0</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span>Delivery Fee (COD Parcel):</span>
+                            <span id="cart-delivery-fee" class="font-bold text-brightCyan">PKR 200</span>
+                        </div>
+                        <div class="flex justify-between text-base font-extrabold pt-2 border-t border-white/10">
+                            <span class="text-white">Total Amount:</span>
+                            <span id="cart-total-price" class="text-vividGold">PKR 200</span>
+                        </div>
+                    </div>
+
+                    <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl bg-gradient-to-r from-neonPink via-electricPurple to-brightCyan hover:opacity-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-pink transition-all">
+                        <i class="fa-solid fa-credit-card"></i> Proceed to COD Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CASH ON DELIVERY (COD) CHECKOUT MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-cardDark border border-cardDarkBorder w-full max-w-lg rounded-2xl p-6 shadow-2xl relative my-8">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-extrabold text-white">Cash On Delivery Parcel</h3>
+                    <p class="text-xs text-gray-400">Enter delivery details to dispatch your shipment.</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
+                <!-- Customer Name & Phone -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Full Name *</label>
+                        <input type="text" id="cust-name" required placeholder="John Doe"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-brightCyan">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Phone / Mobile *</label>
+                        <input type="tel" id="cust-phone" required placeholder="03001234567"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-brightCyan">
+                    </div>
+                </div>
+
+                <!-- Complete Address -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Full Delivery Address *</label>
+                    <textarea id="cust-address" required rows="2" placeholder="House/Flat No, Street Name, Sector/Block..."
+                        class="w-full px-3.5 py-2 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-brightCyan"></textarea>
+                </div>
+
+                <!-- City & Nearest Landmark -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">City / Area *</label>
+                        <input type="text" id="cust-city" required placeholder="e.g. Karachi / Lahore"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-brightCyan">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Nearest Landmark / Note</label>
+                        <input type="text" id="cust-landmark" placeholder="e.g. Near Main Mosque"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-darkBg border border-white/10 text-white text-xs focus:outline-none focus:border-brightCyan">
+                    </div>
+                </div>
+
+                <!-- Payment Method Badge -->
+                <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs">
+                    <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-money-bill-wave"></i> Payment Method:
+                    </span>
+                    <span class="font-extrabold text-white bg-emerald-500/20 px-2.5 py-1 rounded-lg">Cash On Delivery (COD)</span>
+                </div>
+
+                <!-- Order Payable Breakdown -->
+                <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1 text-xs">
+                    <div class="flex justify-between text-gray-400">
+                        <span>Items Subtotal:</span>
+                        <span id="checkout-subtotal" class="font-bold text-white">PKR 0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-400">
+                        <span>Parcel Shipping Fee:</span>
+                        <span id="checkout-shipping" class="font-bold text-brightCyan">PKR 200</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-extrabold pt-1.5 border-t border-white/10">
+                        <span class="text-white">Payable Cash on Arrival:</span>
+                        <span id="checkout-total" class="text-vividGold">PKR 200</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-box-archive"></i> Confirm & Place COD Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDER SUCCESS CONFIRMATION MODAL -->
+    <div id="order-success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
+        <div class="bg-cardDark border border-cardDarkBorder w-full max-w-md rounded-2xl p-6 shadow-2xl text-center relative">
+            <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl mx-auto mb-4 border border-emerald-500/30">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            
+            <h3 class="text-2xl font-extrabold text-white">Order Confirmed!</h3>
+            <p class="text-xs text-gray-300 mt-1">Your order has been logged into our Cash on Delivery system.</p>
+
+            <div class="my-5 p-4 rounded-xl bg-darkBg border border-white/10 text-left space-y-2 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Order ID:</span>
+                    <span id="success-order-id" class="font-black text-brightCyan">#COD-0000</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Status:</span>
+                    <span class="font-bold text-emerald-400">Pending Dispatch</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Est. Delivery:</span>
+                    <span class="font-bold text-white">2 - 4 Working Days</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-white/10 font-bold">
+                    <span class="text-gray-300">Total Payable at Doorstep:</span>
+                    <span id="success-order-total" class="text-vividGold text-sm">PKR 0</span>
+                </div>
+            </div>
+
+            <button onclick="closeSuccessModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-neonPink to-electricPurple text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 shadow-glow-pink">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+
+    <!-- PRINTABLE PARCEL SLIP CONTAINER (Hidden until window.print is called) -->
+    <div id="printable-parcel-slip" class="hidden"></div>
+
+    <!-- Footer -->
+    <footer class="bg-cardDark border-t border-white/10 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div>
+                <a href="#" class="text-xl font-black gradient-text">VIBE CRAFT</a>
+                <p class="text-gray-400 text-xs mt-0.5">Next-Gen Apparel Store. Quality Delivered directly to your door.</p>
+            </div>
+            
+            <div class="text-xs text-gray-500">
+                &copy; Vibe Craft Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Engine -->
+    <script>
+        // DEFAULT INITIAL PRODUCTS (Used if LocalStorage is empty)
+        const sampleProducts = [
+            {
+                id: 101,
+                title: "Cyberpunk Neon Hoodie",
+                category: "Hoodies",
+                price: 3499,
+                image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80",
+                sizes: ["S", "M", "L", "XL"],
+                badge: "Bestseller",
+                inStock: true
+            },
+            {
+                id: 102,
+                title: "Vibe Acid Wash Oversized Tee",
+                category: "T-Shirts",
+                price: 1899,
+                image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
+                sizes: ["M", "L", "XL", "XXL"],
+                badge: "New Drop",
+                inStock: true
+            },
+            {
+                id: 103,
+                title: "Tactical Techwear Jacket",
+                category: "Jackets",
+                price: 5999,
+                image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=600&q=80",
+                sizes: ["S", "M", "L"],
+                badge: "Limited",
+                inStock: true
+            }
+        ];
+
+        // CORE APPLICATION STATE
+        let products = [];
+        let orders = [];
+        let cart = [];
+        let currentView = 'client';
+        let activeAdminTab = 'products';
+
+        let storeSettings = {
+            storeName: "VIBE CRAFT",
+            currency: "PKR",
+            deliveryFee: 200,
+            adminPin: "1234"
+        };
+
+        const selectedSizes = {};
+        let currentBase64Image = "";
+
+        // INITIALIZATION
+        document.addEventListener("DOMContentLoaded", () => {
+            loadStateFromLocalStorage();
+            renderClientCatalog();
+            renderAdminInventory();
+            renderAdminOrders();
+            updateCartUI();
+        });
+
+        // LOCALSTORAGE MANAGEMENT
+        function loadStateFromLocalStorage() {
+            const savedProducts = localStorage.getItem("vibecraft_products");
+            if (savedProducts) {
+                products = JSON.parse(savedProducts);
+            } else {
+                products = sampleProducts;
+                localStorage.setItem("vibecraft_products", JSON.stringify(products));
+            }
+
+            const savedOrders = localStorage.getItem("store_orders");
+            if (savedOrders) {
+                orders = JSON.parse(savedOrders);
+            }
+
+            const savedSettings = localStorage.getItem("vibecraft_settings");
+            if (savedSettings) {
+                storeSettings = { ...storeSettings, ...JSON.parse(savedSettings) };
+            }
+
+            updateSettingsInputs();
+        }
+
+        function saveProductsToLocalStorage() {
+            localStorage.setItem("vibecraft_products", JSON.stringify(products));
+            renderClientCatalog();
+            renderAdminInventory();
+        }
+
+        function saveOrdersToLocalStorage() {
+            localStorage.setItem("store_orders", JSON.stringify(orders));
+            renderAdminOrders();
+        }
+
+        function updateSettingsInputs() {
+            document.getElementById("setting-store-name").value = storeSettings.storeName;
+            document.getElementById("setting-currency").value = storeSettings.currency;
+            document.getElementById("setting-delivery-fee").value = storeSettings.deliveryFee;
+            document.getElementById("setting-admin-pin").value = storeSettings.adminPin;
+
+            document.querySelectorAll(".currency-label-span").forEach(el => el.innerText = storeSettings.currency);
+        }
+
+        function saveStoreSettings(e) {
+            e.preventDefault();
+            storeSettings.storeName = document.getElementById("setting-store-name").value.trim() || "VIBE CRAFT";
+            storeSettings.currency = document.getElementById("setting-currency").value.trim() || "PKR";
+            storeSettings.deliveryFee = parseFloat(document.getElementById("setting-delivery-fee").value) || 0;
+            storeSettings.adminPin = document.getElementById("setting-admin-pin").value.trim() || "1234";
+
+            localStorage.setItem("vibecraft_settings", JSON.stringify(storeSettings));
+            updateSettingsInputs();
+            renderClientCatalog();
+            renderAdminInventory();
+            updateCartUI();
+            showToast("Store settings saved!");
+        }
+
+        // SECRET SEARCH TRIGGER ENGINE FOR ADMIN
+        function checkAdminSecretKey(event) {
+            const val = document.getElementById("client-search").value.trim().toLowerCase();
+            if (val === 'admin009') {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    triggerAdminAccess();
+                }
+            }
+        }
+
+        // VIEW & ADMIN SECURITY LOGIC
+        function switchView(view) {
+            currentView = view;
+            const clientView = document.getElementById("client-view");
+            const adminView = document.getElementById("admin-view");
+            const exitAdminBtn = document.getElementById("exit-admin-btn");
+            const cartBtn = document.getElementById("cart-toggle-btn");
+
+            if (view === "admin") {
+                clientView.classList.add("hidden");
+                adminView.classList.remove("hidden");
+                cartBtn.classList.add("hidden");
+                exitAdminBtn.classList.remove("hidden");
+            } else {
+                adminView.classList.add("hidden");
+                clientView.classList.remove("hidden");
+                cartBtn.classList.remove("hidden");
+                exitAdminBtn.classList.add("hidden");
+            }
+        }
+
+        function triggerAdminAccess() {
+            document.getElementById("client-search").value = "";
+            renderClientCatalog();
+
+            document.getElementById("admin-pin-modal").classList.remove("hidden");
+            document.getElementById("admin-pin-input").value = "";
+            document.getElementById("admin-pin-input").focus();
+        }
+
+        function closePinModal() {
+            document.getElementById("admin-pin-modal").classList.add("hidden");
+            document.getElementById("pin-error-msg").classList.add("hidden");
+            document.getElementById("admin-pin-input").value = "";
+        }
+
+        function verifyAdminPin(e) {
+            e.preventDefault();
+            const enteredPin = document.getElementById("admin-pin-input").value.trim();
+            if (enteredPin === storeSettings.adminPin) {
+                closePinModal();
+                switchView('admin');
+            } else {
+                document.getElementById("pin-error-msg").classList.remove("hidden");
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            activeAdminTab = tabName;
+            
+            ['products', 'orders', 'settings'].forEach(t => {
+                const tabEl = document.getElementById(`admin-tab-${t}`);
+                const btnEl = document.getElementById(`tab-btn-${t}`);
+                
+                if (t === tabName) {
+                    tabEl.classList.remove("hidden");
+                    btnEl.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all bg-brightCyan text-black relative";
+                } else {
+                    tabEl.classList.add("hidden");
+                    btnEl.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white relative";
+                }
+            });
+
+            if (tabName === 'orders') {
+                renderAdminOrders();
+            }
+        }
+
+        // IMAGE UPLOAD / URL HANDLERS
+        function handleImageUrlInput() {
+            const url = document.getElementById("prod-image-url").value;
+            const preview = document.getElementById("image-preview");
+            const container = document.getElementById("image-preview-container");
+            
+            if (url) {
+                currentBase64Image = "";
+                preview.src = url;
+                container.classList.remove("hidden");
+            } else if (!currentBase64Image) {
+                container.classList.add("hidden");
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentBase64Image = e.target.result;
+                    document.getElementById("prod-image-url").value = "";
+                    document.getElementById("image-preview").src = currentBase64Image;
+                    document.getElementById("image-preview-container").classList.remove("hidden");
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ADMIN PRODUCT FORM ACTIONS
+        function handleProductSubmit(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById("edit-product-id").value;
+            const title = document.getElementById("prod-title").value.trim();
+            const category = document.getElementById("prod-category").value;
+            const price = parseFloat(document.getElementById("prod-price").value);
+            const badge = document.getElementById("prod-badge").value;
+            const inStock = document.getElementById("prod-in-stock").value === "true";
+
+            const sizeCheckboxes = document.querySelectorAll("#sizes-checkbox-group input[type='checkbox']:checked");
+            const sizes = Array.from(sizeCheckboxes).map(cb => cb.value);
+
+            if (sizes.length === 0) {
+                alert("Please select at least one available size.");
+                return;
+            }
+
+            const imageUrlInput = document.getElementById("prod-image-url").value.trim();
+            const finalImage = currentBase64Image || imageUrlInput || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80";
+
+            if (editId) {
+                const index = products.findIndex(p => p.id === parseInt(editId));
+                if (index !== -1) {
+                    products[index] = {
+                        ...products[index],
+                        title,
+                        category,
+                        price,
+                        image: finalImage,
+                        sizes,
+                        badge,
+                        inStock
+                    };
+                }
+            } else {
+                const newProduct = {
+                    id: Date.now(),
+                    title,
+                    category,
+                    price,
+                    image: finalImage,
+                    sizes,
+                    badge,
+                    inStock
+                };
+                products.unshift(newProduct);
+            }
+
+            saveProductsToLocalStorage();
+            resetForm();
+            showToast(editId ? "Product updated!" : "New product added!");
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            document.getElementById("edit-product-id").value = product.id;
+            document.getElementById("prod-title").value = product.title;
+            document.getElementById("prod-category").value = product.category;
+            document.getElementById("prod-price").value = product.price;
+            document.getElementById("prod-badge").value = product.badge || "";
+            document.getElementById("prod-in-stock").value = product.inStock ? "true" : "false";
+
+            const checkboxes = document.querySelectorAll("#sizes-checkbox-group input[type='checkbox']");
+            checkboxes.forEach(cb => {
+                cb.checked = product.sizes.includes(cb.value);
+            });
+
+            if (product.image.startsWith("data:image")) {
+                currentBase64Image = product.image;
+                document.getElementById("prod-image-url").value = "";
+            } else {
+                currentBase64Image = "";
+                document.getElementById("prod-image-url").value = product.image;
+            }
+            document.getElementById("image-preview").src = product.image;
+            document.getElementById("image-preview-container").classList.remove("hidden");
+
+            document.getElementById("form-title").innerHTML = `<i class="fa-solid fa-pen-to-square text-brightCyan"></i> Edit Product`;
+            document.getElementById("submit-btn").innerText = "Update Product";
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                products = products.filter(p => p.id !== id);
+                saveProductsToLocalStorage();
+                showToast("Product deleted.");
+            }
+        }
+
+        function toggleStock(id) {
+            const index = products.findIndex(p => p.id === id);
+            if (index !== -1) {
+                products[index].inStock = !products[index].inStock;
+                saveProductsToLocalStorage();
+            }
+        }
+
+        function clearAllProducts() {
+            if (confirm("WARNING: Clear all products from catalog?")) {
+                products = [];
+                saveProductsToLocalStorage();
+                showToast("Catalog cleared.");
+            }
+        }
+
+        function resetForm() {
+            document.getElementById("product-form").reset();
+            document.getElementById("edit-product-id").value = "";
+            currentBase64Image = "";
+            document.getElementById("image-preview-container").classList.add("hidden");
+            document.getElementById("form-title").innerHTML = `<i class="fa-solid fa-plus text-neonPink"></i> Add New Product`;
+            document.getElementById("submit-btn").innerText = "Save Product";
+        }
+
+        // CLIENT CATALOG RENDERING
+        function renderClientCatalog() {
+            const grid = document.getElementById("client-catalog-grid");
+            const emptyState = document.getElementById("catalog-empty-state");
+            const searchQuery = document.getElementById("client-search").value.toLowerCase().trim();
+            const selectedCategory = document.getElementById("client-category-filter").value;
+
+            if (searchQuery === 'admin009') {
+                triggerAdminAccess();
+                return;
+            }
+
+            grid.innerHTML = "";
+
+            const filtered = products.filter(p => {
+                const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
+                const matchesSearch = p.title.toLowerCase().includes(searchQuery);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove("hidden");
+                grid.classList.add("hidden");
+                return;
+            }
+
+            emptyState.classList.add("hidden");
+            grid.classList.remove("hidden");
+
+            const currSymbol = storeSettings.currency || "PKR";
+
+            filtered.forEach(product => {
+                if (!selectedSizes[product.id] && product.sizes.length > 0) {
+                    selectedSizes[product.id] = product.sizes[0];
+                }
+
+                const card = document.createElement("div");
+                card.className = "bg-cardDark rounded-2xl border border-cardDarkBorder overflow-hidden hover:border-neonPink/50 transition-all duration-300 flex flex-col justify-between group shadow-lg";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative aspect-[4/5] bg-black/20 overflow-hidden">
+                            <img src="${product.image}" alt="${product.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                            <div class="absolute top-3 left-3 flex flex-col gap-1">
+                                ${product.badge ? `
+                                    <span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-neonPink to-electricPurple text-white font-extrabold text-[10px] uppercase tracking-wider shadow-md">
+                                        ${product.badge}
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            ${!product.inStock ? `
+                                <div class="absolute inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center">
+                                    <span class="px-3 py-1.5 rounded-xl bg-red-500/20 text-red-400 border border-red-500/40 text-xs font-black uppercase tracking-wider">Out of Stock</span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="p-4">
+                            <span class="text-[10px] font-bold text-brightCyan uppercase tracking-widest">${product.category}</span>
+                            <h3 class="text-base font-bold text-white group-hover:text-neonPink transition-colors line-clamp-1 mt-0.5">${product.title}</h3>
+                            <div class="text-xl font-black text-vividGold mt-1">${currSymbol} ${product.price.toLocaleString()}</div>
+
+                            <div class="mt-3">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Select Size:</label>
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${product.sizes.map(size => `
+                                        <button 
+                                            onclick="selectCardSize(${product.id}, '${size}')"
+                                            id="size-btn-${product.id}-${size}"
+                                            class="size-btn-${product.id} px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all ${
+                                                selectedSizes[product.id] === size 
+                                                ? 'bg-brightCyan text-black border-brightCyan shadow-sm' 
+                                                : 'border-white/10 text-gray-300 hover:border-white/40'
+                                            }">
+                                            ${size}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 pt-0">
+                        <button onclick="addToCart(${product.id})" ${!product.inStock ? 'disabled' : ''} 
+                            class="w-full py-3 rounded-xl bg-gradient-to-r from-neonPink via-electricPurple to-brightCyan hover:opacity-90 disabled:opacity-40 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-pink transition-all">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Bag
+                        </button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function selectCardSize(productId, size) {
+            selectedSizes[productId] = size;
+            const buttons = document.querySelectorAll(`.size-btn-${productId}`);
+            buttons.forEach(btn => {
+                btn.className = `size-btn-${productId} px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all border-white/10 text-gray-300 hover:border-white/40`;
+            });
+            const activeBtn = document.getElementById(`size-btn-${productId}-${size}`);
+            if (activeBtn) {
+                activeBtn.className = `size-btn-${productId} px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all bg-brightCyan text-black border-brightCyan shadow-sm`;
+            }
+        }
+
+        // ADMIN INVENTORY TABLE RENDER
+        function renderAdminInventory() {
+            const table = document.getElementById("admin-inventory-table");
+            const countBadge = document.getElementById("admin-item-count");
+            table.innerHTML = "";
+
+            countBadge.innerText = `${products.length} Items`;
+
+            if (products.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-500 text-xs">
+                            No products in store inventory. Use form on the left to add items!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const currSymbol = storeSettings.currency || "PKR";
+
+            products.forEach(p => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-white/5 transition-colors";
+
+                row.innerHTML = `
+                    <td class="py-3 px-2 flex items-center gap-3">
+                        <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover border border-white/10">
+                        <div>
+                            <div class="font-bold text-white text-xs line-clamp-1">${p.title}</div>
+                            <div class="text-[10px] text-gray-400">Sizes: ${p.sizes.join(", ")}</div>
+                        </div>
+                    </td>
+                    <td class="py-3 px-2 text-xs text-gray-300 font-medium">${p.category}</td>
+                    <td class="py-3 px-2 text-xs font-bold text-vividGold">${currSymbol} ${p.price.toLocaleString()}</td>
+                    <td class="py-3 px-2">
+                        <button onclick="toggleStock(${p.id})" class="px-2 py-1 rounded-md text-[10px] font-bold ${p.inStock ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                            ${p.inStock ? 'In Stock' : 'Out of Stock'}
+                        </button>
+                    </td>
+                    <td class="py-3 px-2 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="editProduct(${p.id})" class="p-1.5 rounded-lg bg-white/5 hover:bg-brightCyan hover:text-black text-gray-300 transition-all text-xs">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteProduct(${p.id})" class="p-1.5 rounded-lg bg-white/5 hover:bg-red-500 hover:text-white text-red-400 transition-all text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                table.appendChild(row);
+            });
+        }
+
+        // SHOPPING CART SYSTEM
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product || !product.inStock) return;
+
+            const size = selectedSizes[productId] || product.sizes[0];
+            const existingIndex = cart.findIndex(item => item.id === productId && item.size === size);
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({ ...product, size, quantity: 1 });
+            }
+
+            updateCartUI();
+            toggleCartDrawer(true);
+            showToast("Added to Bag!");
+        }
+
+        function updateCartQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById("cart-items");
+            const cartCountBadge = document.getElementById("cart-count");
+            const subtotalEl = document.getElementById("cart-subtotal");
+            const deliveryFeeEl = document.getElementById("cart-delivery-fee");
+            const totalPriceEl = document.getElementById("cart-total-price");
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const currSymbol = storeSettings.currency || "PKR";
+            const deliveryFee = totalItems > 0 ? storeSettings.deliveryFee : 0;
+            const grandTotal = subtotal + deliveryFee;
+
+            cartCountBadge.innerText = totalItems;
+            subtotalEl.innerText = `${currSymbol} ${subtotal.toLocaleString()}`;
+            deliveryFeeEl.innerText = `${currSymbol} ${deliveryFee.toLocaleString()}`;
+            totalPriceEl.innerText = `${currSymbol} ${grandTotal.toLocaleString()}`;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fa-solid fa-bag-shopping text-4xl mb-3"></i>
+                        <p class="text-xs font-bold">Your bag is empty.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            cartItemsContainer.innerHTML = cart.map((item, index) => `
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-black/40 border border-white/5">
+                    <img src="${item.image}" alt="${item.title}" class="w-14 h-14 rounded-lg object-cover">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-xs text-white line-clamp-1">${item.title}</h4>
+                        <div class="text-[11px] text-brightCyan font-semibold">Size: ${item.size}</div>
+                        <div class="text-xs font-black text-vividGold mt-0.5">${currSymbol} ${(item.price * item.quantity).toLocaleString()}</div>
+                    </div>
+                    <div class="flex items-center gap-1.5 border border-white/10 rounded-lg p-1 bg-cardDark">
+                        <button onclick="updateCartQuantity(${index}, -1)" class="w-5 h-5 flex items-center justify-center text-xs text-gray-300 hover:text-white">-</button>
+                        <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                        <button onclick="updateCartQuantity(${index}, 1)" class="w-5 h-5 flex items-center justify-center text-xs text-gray-300 hover:text-white">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCartDrawer(openState) {
+            const drawer = document.getElementById("cart-drawer");
+            const panel = document.getElementById("cart-panel");
+            const isOpening = openState !== undefined ? openState : drawer.classList.contains("pointer-events-none");
+
+            if (isOpening) {
+                drawer.classList.remove("pointer-events-none", "opacity-0");
+                drawer.classList.add("opacity-100");
+                panel.classList.remove("translate-x-full");
+            } else {
+                drawer.classList.add("pointer-events-none", "opacity-0");
+                drawer.classList.remove("opacity-100");
+                panel.classList.add("translate-x-full");
+            }
+        }
+
+        // CASH ON DELIVERY CHECKOUT FLOW
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            toggleCartDrawer(false);
+
+            const currSymbol = storeSettings.currency || "PKR";
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = storeSettings.deliveryFee;
+            const grandTotal = subtotal + deliveryFee;
+
+            document.getElementById("checkout-subtotal").innerText = `${currSymbol} ${subtotal.toLocaleString()}`;
+            document.getElementById("checkout-shipping").innerText = `${currSymbol} ${deliveryFee.toLocaleString()}`;
+            document.getElementById("checkout-total").innerText = `${currSymbol} ${grandTotal.toLocaleString()}`;
+
+            document.getElementById("checkout-modal").classList.remove("hidden");
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById("checkout-modal").classList.add("hidden");
+        }
+
+        function handleCheckoutSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById("cust-name").value.trim();
+            const phone = document.getElementById("cust-phone").value.trim();
+            const address = document.getElementById("cust-address").value.trim();
+            const city = document.getElementById("cust-city").value.trim();
+            const landmark = document.getElementById("cust-landmark").value.trim();
+
+            const currSymbol = storeSettings.currency || "PKR";
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = storeSettings.deliveryFee;
+            const grandTotal = subtotal + deliveryFee;
+
+            const orderId = "COD-" + Math.floor(100000 + Math.random() * 900000);
+
+            const newOrder = {
+                id: orderId,
+                date: new Date().toLocaleString(),
+                customer: {
+                    name,
+                    phone,
+                    address,
+                    city,
+                    landmark
+                },
+                items: [...cart],
+                subtotal,
+                deliveryFee,
+                totalAmount: grandTotal,
+                currency: currSymbol,
+                status: "Pending" // 'Pending', 'Dispatched', 'Delivered', 'Cancelled'
+            };
+
+            orders.unshift(newOrder);
+            saveOrdersToLocalStorage();
+
+            // Show Confirmation Modal
+            document.getElementById("success-order-id").innerText = `#${orderId}`;
+            document.getElementById("success-order-total").innerText = `${currSymbol} ${grandTotal.toLocaleString()}`;
+
+            closeCheckoutModal();
+            document.getElementById("order-success-modal").classList.remove("hidden");
+
+            // Reset Cart
+            cart = [];
+            updateCartUI();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById("order-success-modal").classList.add("hidden");
+        }
+
+        // ADMIN ORDERS MANAGEMENT (COD PARCELS)
+        function renderAdminOrders() {
+            const listContainer = document.getElementById("admin-orders-list");
+            const pendingBadge = document.getElementById("admin-pending-badge");
+            
+            listContainer.innerHTML = "";
+
+            const pendingCount = orders.filter(o => o.status === "Pending").length;
+            if (pendingCount > 0) {
+                pendingBadge.innerText = pendingCount;
+                pendingBadge.classList.remove("hidden");
+            } else {
+                pendingBadge.classList.add("hidden");
+            }
+
+            if (orders.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 text-gray-500 border border-dashed border-white/10 rounded-xl">
+                        <i class="fa-solid fa-box-open text-3xl mb-2"></i>
+                        <p class="text-xs font-bold">No Cash on Delivery orders received yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                const card = document.createElement("div");
+                card.className = "bg-black/40 border border-white/10 rounded-2xl p-5 space-y-4 hover:border-white/20 transition-all";
+
+                let statusBadgeStyle = "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+                if (order.status === "Dispatched") statusBadgeStyle = "bg-blue-500/20 text-blue-400 border-blue-500/30";
+                if (order.status === "Delivered") statusBadgeStyle = "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+                if (order.status === "Cancelled") statusBadgeStyle = "bg-red-500/20 text-red-400 border-red-500/30";
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                        <div>
+                            <span class="font-black text-brightCyan text-sm">#${order.id}</span>
+                            <span class="text-xs text-gray-400 ml-2"><i class="fa-regular fa-clock mr-1"></i>${order.date}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <!-- Status Selector -->
+                            <select onchange="updateOrderStatus('${order.id}', this.value)" class="px-2.5 py-1 rounded-lg border text-xs font-bold bg-darkBg text-white ${statusBadgeStyle}">
+                                <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Dispatched" ${order.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+                                <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+
+                            <button onclick="printParcelSlip(${index})" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300">
+                                <i class="fa-solid fa-print mr-1"></i> Print Slip
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <!-- Customer Info -->
+                        <div class="space-y-1 bg-darkBg/60 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Shipping Receiver:</span>
+                            <div class="font-bold text-white text-sm"><i class="fa-solid fa-user mr-1 text-neonPink"></i> ${order.customer.name}</div>
+                            <div class="text-brightCyan font-bold"><i class="fa-solid fa-phone mr-1"></i> ${order.customer.phone}</div>
+                            <div class="text-gray-300"><i class="fa-solid fa-location-dot mr-1"></i> ${order.customer.address}, ${order.customer.city}</div>
+                            ${order.customer.landmark ? `<div class="text-gray-400 italic">Landmark: ${order.customer.landmark}</div>` : ''}
+                        </div>
+
+                        <!-- Parcel Items -->
+                        <div class="space-y-1.5 bg-darkBg/60 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Parcel Contents:</span>
+                            <div class="space-y-1 max-h-24 overflow-y-auto pr-1">
+                                ${order.items.map(i => `
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-200">${i.quantity}x ${i.title} (${i.size})</span>
+                                        <span class="font-bold text-vividGold">${order.currency} ${(i.price * i.quantity).toLocaleString()}</span>
+                                    </div>
+                                me`).join('')}
+                            </div>
+                            <div class="pt-2 border-t border-white/10 flex justify-between font-extrabold text-sm">
+                                <span class="text-white">COD Amount to Collect:</span>
+                                <span class="text-vividGold">${order.currency} ${order.totalAmount.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const index = orders.findIndex(o => o.id === orderId);
+            if (index !== -1) {
+                orders[index].status = newStatus;
+                saveOrdersToLocalStorage();
+                showToast(`Order status updated to ${newStatus}`);
+            }
+        }
+
+        function printParcelSlip(orderIndex) {
+            const order = orders[orderIndex];
+            if (!order) return;
+
+            const slipContainer = document.getElementById("printable-parcel-slip");
+            slipContainer.innerHTML = `
+                <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; border: 2px solid #000; padding: 20px;">
+                    <div style="display: flex; justify-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 24px; text-transform: uppercase;">${storeSettings.storeName}</h2>
+                            <p style="margin: 0; font-size: 12px;">CASH ON DELIVERY PARCEL</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="margin: 0; font-size: 18px;">ORDER #${order.id}</h3>
+                            <p style="margin: 0; font-size: 11px;">${order.date}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; border-bottom: 1px solid #ccc; padding-bottom: 15px;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 12px; text-transform: uppercase; color: #555;">DELIVER TO RECEIVER:</h4>
+                        <div style="font-size: 16px; font-weight: bold;">${order.customer.name}</div>
+                        <div style="font-size: 14px; font-weight: bold; margin-top: 3px;">Phone: ${order.customer.phone}</div>
+                        <div style="font-size: 14px; margin-top: 3px;">${order.customer.address}</div>
+                        <div style="font-size: 14px; font-weight: bold;">City: ${order.customer.city}</div>
+                        ${order.customer.landmark ? `<div style="font-size: 12px; font-style: italic;">Landmark: ${order.customer.landmark}</div>` : ''}
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 12px; text-transform: uppercase; color: #555;">PARCEL ITEMS:</h4>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #000; text-align: left;">
+                                    <th style="padding: 4px 0;">Item</th>
+                                    <th style="padding: 4px 0;">Size</th>
+                                    <th style="padding: 4px 0;">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${order.items.map(item => `
+                                    <tr style="border-bottom: 1px dashed #eee;">
+                                        <td style="padding: 6px 0;">${item.title}</td>
+                                        <td style="padding: 6px 0;">${item.size}</td>
+                                        <td style="padding: 6px 0;">${item.quantity}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; border: 2px solid #000; padding: 12px; text-align: center; background-color: #f9f9f9;">
+                        <span style="font-size: 12px; display: block; font-weight: bold;">CASH TO COLLECT ON DELIVERY:</span>
+                        <span style="font-size: 26px; font-weight: 900;">${order.currency} ${order.totalAmount.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+
+            window.print();
+        }
+
+        // UTILITY TOAST NOTIFICATION
+        function showToast(text) {
+            const toast = document.createElement("div");
+            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-cardDark text-white border border-neonPink px-4 py-2 rounded-xl text-xs font-bold shadow-glow-pink animate-bounce";
+            toast.innerText = text;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+    </script>
+</body>
+</html>
